@@ -4,7 +4,7 @@ use dioxus::prelude::*;
 
 mod components;
 
-use crate::components::{footer::Footer, header::Header};
+use crate::components::{footer::Footer, header::Header, home_page::HomePage};
 
 fn main() {
     dioxus::web::launch(App);
@@ -13,6 +13,7 @@ fn main() {
 fn App(cx: Scope) -> Element {
     cx.render(rsx! (
         Header {  }
+        HomePage {  }
         Footer {  }
     ))
 }
