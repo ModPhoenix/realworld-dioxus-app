@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 
-use crate::components::article_preview::ArticlePreview;
+use crate::features::home::{article_preview::ArticlePreview, tags::Tags};
 
 pub fn HomePage(cx: Scope) -> Element {
     cx.render(rsx! (
@@ -30,19 +30,7 @@ pub fn HomePage(cx: Scope) -> Element {
                         ArticlePreview { }
                     }
                     div { class: "col-md-3",
-                        div { class: "sidebar",
-                            p { "Popular Tags" }
-                            div { class: "tag-list",
-                                a { class: "tag-pill tag-default", href: "", "programming" }
-                                a { class: "tag-pill tag-default", href: "", "javascript" }
-                                a { class: "tag-pill tag-default", href: "", "emberjs" }
-                                a { class: "tag-pill tag-default", href: "", "react" }
-                                a { class: "tag-pill tag-default", href: "", "mean" }
-                                a { class: "tag-pill tag-default", href: "", "node" }
-                                a { class: "tag-pill tag-default", href: "", "rails" }
-                                a { class: "tag-pill tag-default", href: "", "angularjs" }
-                            }
-                        }
+                        Tags {}
                     }
                 }
             }

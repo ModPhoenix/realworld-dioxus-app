@@ -3,8 +3,12 @@
 use dioxus::prelude::*;
 
 mod components;
+mod features;
 
-use crate::components::{footer::Footer, header::Header, home_page::HomePage};
+use crate::{
+    components::{footer::Footer, header::Header},
+    features::home::home_page::HomePage,
+};
 
 fn main() {
     dioxus::web::launch(App);
