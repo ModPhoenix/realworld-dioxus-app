@@ -4,10 +4,15 @@ use dioxus::prelude::*;
 
 mod components;
 mod features;
+mod settings;
 
 use crate::{
     components::{Footer, Header},
-    features::{auth::SignInPage, home::HomePage},
+    features::{
+        auth::{SignInPage, SignUpPage},
+        home::HomePage,
+    },
+    settings::path,
 };
 
 fn main() {
@@ -18,8 +23,9 @@ fn App(cx: Scope) -> Element {
     cx.render(rsx! (
         Router {
             Header {  }
-            Route { to: "/", HomePage {} }
-            Route { to: "/sign-in", SignInPage {} }
+            Route { to: path::HOME, HomePage {} }
+            Route { to: path::SIGN_UP, SignUpPage {} }
+            Route { to: path::SIGN_IN, SignInPage {} }
             Footer {  }
         }
     ))
