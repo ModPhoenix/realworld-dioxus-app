@@ -9,3 +9,5 @@ edition = "2021"
 dioxus = { version = "0.2.3", features = ["web", "router"] }
 reqwest = { version = "0.11.9", features = ["json"] }
 serde = { version = "1.0.136", features = ["derive"] }
+log = "0.4.14"
+wasm-logger = "0.2.0"
