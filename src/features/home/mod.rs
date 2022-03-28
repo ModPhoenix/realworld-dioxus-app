@@ -1,3 +1,5 @@
-pub mod article_preview;
+mod article_preview;
 pub mod home_page;
-pub mod tags;
+mod tags;
+
+pub use home_page::*;

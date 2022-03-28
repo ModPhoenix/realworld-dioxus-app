@@ -6,8 +6,8 @@ mod components;
 mod features;
 
 use crate::{
-    components::{footer::Footer, header::Header},
-    features::{auth::sign_in_page::SignInPage, home::home_page::HomePage},
+    components::{Footer, Header},
+    features::{auth::SignInPage, home::HomePage},
 };
 
 fn main() {
