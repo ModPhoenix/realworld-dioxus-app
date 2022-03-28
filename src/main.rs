@@ -7,7 +7,7 @@ mod features;
 
 use crate::{
     components::{footer::Footer, header::Header},
-    features::home::home_page::HomePage,
+    features::{auth::sign_in_page::SignInPage, home::home_page::HomePage},
 };
 
 fn main() {
@@ -16,8 +16,11 @@ fn main() {
 
 fn App(cx: Scope) -> Element {
     cx.render(rsx! (
-        Header {  }
-        HomePage {  }
-        Footer {  }
+        Router {
+            Header {  }
+            Route { to: "/", HomePage {} }
+            Route { to: "/sign-in", SignInPage {} }
+            Footer {  }
+        }
     ))
 }
