@@ -5,6 +5,7 @@ use dioxus::prelude::*;
 mod components;
 mod features;
 mod settings;
+mod types;
 
 use crate::{
     features::{

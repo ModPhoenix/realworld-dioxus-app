@@ -746,7 +746,9 @@ dependencies = [
  "log",
  "reqwest",
  "serde",
+ "serde_json",
  "wasm-logger",
+ "web-sys",
 ]
 
 [[package]]
