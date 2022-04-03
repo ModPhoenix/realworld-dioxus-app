@@ -1,98 +1,29 @@
-use std::collections::HashMap;
+use dioxus::{events::FormEvent, fermi::use_atom_root, prelude::*};
 
-use dioxus::{events::FormEvent, prelude::*};
-use serde::Deserialize;
-
-use crate::{settings::path, types::User};
-
-#[derive(Debug, Deserialize)]
-struct UserResponse {
-    user: User,
-}
-
-#[derive(Deserialize, Debug)]
-struct GenericError {
-    errors: HashMap<String, Vec<String>>,
-}
+use crate::{
+    services::auth_service::{auth_service, AuthService, SIGN_IN_ERROR},
+    types::{SignUpFormData, SignUpFormDataRequest},
+};
 
 pub fn SignUpForm(cx: Scope) -> Element {
     let router = use_router(&cx);
-    // let data = use_state(&cx, || None);
-    let error = use_state(&cx, || None);
+
+    let atoms = use_atom_root(&cx);
+    let auth = use_coroutine(&cx, |rx| auth_service(rx, atoms.clone(), router.clone()));
+
+    let error = use_read(&cx, SIGN_IN_ERROR);
 
     let onsubmit = move |evt: FormEvent| {
-        cx.spawn({
-            let router = router.clone();
-            let error = error.clone();
-            async move {
-                let result = reqwest::Client::new()
-                    .post("https://api.realworld.io/api/users")
-                    .json(&serde_json::json!({
-                        "user": {
-                            "username": &evt.values["username"],
-                            "email": &evt.values["email"],
-                            "password": &evt.values["password"]
-                        }
-                    }))
-                    .send()
-                    .await;
-
-                match result {
-                    Ok(response) => match response.status() {
-                        reqwest::StatusCode::OK => {
-                            match response.json::<UserResponse>().await {
-                                Ok(res) => {
-                                    // data.set(Some(res));
-                                    let window = web_sys::window().expect("window");
-                                    log::debug!("window: {:#?}", window);
-                                    log::debug!("res: {:#?}", res);
-
-                                    let jwt = window
-                                        .local_storage()
-                                        .unwrap()
-                                        .unwrap()
-                                        .set_item("jwt", &res.user.token);
-
-                                    match jwt {
-                                        Ok(ok) => log::debug!("ok: {:#?}", ok),
-                                        Err(err) => log::debug!("err: {:#?}", err),
-                                    }
-
-                                    router.push_route(path::HOME, None, None)
-                                }
-                                Err(error) => log::debug!("error: {:#?}", error),
-                            };
-                        }
-                        reqwest::StatusCode::UNPROCESSABLE_ENTITY => {
-                            match response.json::<GenericError>().await {
-                                Ok(data) => {
-                                    log::debug!("data error {:?}", data);
-                                    let window = web_sys::window().expect("window");
-                                    let jwt = window
-                                        .local_storage()
-                                        .unwrap()
-                                        .unwrap()
-                                        .set_item("jwt", "test");
-
-                                    match jwt {
-                                        Ok(ok) => log::debug!("ok: {:#?}", ok),
-                                        Err(err) => log::debug!("err: {:#?}", err),
-                                    }
-
-                                    error.set(Some(data));
-                                }
-                                Err(error) => log::debug!("error: {:#?}", error),
-                            };
-                        }
-                        _ => log::debug!("Uh oh! Something unexpected happened"),
-                    },
-                    Err(_) => log::debug!("Uh oh! Something unexpected happened"),
-                }
-            }
-        });
+        auth.send(AuthService::SignUp(SignUpFormDataRequest {
+            user: SignUpFormData {
+                username: evt.values["username"].clone(),
+                email: evt.values["email"].clone(),
+                password: evt.values["password"].clone(),
+            },
+        }));
     };
 
-    let error_messages = match error.get() {
+    let error_messages = match error {
         Some(data) => rsx!(
             ul { class: "error-messages",
                 data.errors.iter().map(|(label, vec)| {

@@ -4,6 +4,7 @@ use dioxus::prelude::*;
 
 mod components;
 mod features;
+mod services;
 mod settings;
 mod types;
 
