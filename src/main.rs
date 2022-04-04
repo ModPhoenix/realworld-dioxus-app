@@ -7,6 +7,7 @@ mod features;
 mod services;
 mod settings;
 mod types;
+mod utils;
 
 use crate::{
     features::{

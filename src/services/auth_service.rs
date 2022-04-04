@@ -11,6 +11,7 @@ use futures::StreamExt;
 use crate::{
     settings::path,
     types::{GenericError, SignUpFormDataRequest, UserResponse},
+    utils::local_storage,
 };
 
 pub static SIGN_IN_ERROR: Atom<Option<GenericError>> = |_| None;
@@ -27,42 +28,29 @@ pub async fn auth_service(
     while let Some(msg) = rx.next().await {
         match msg {
             AuthService::SignUp(form_data) => {
-                log::debug!("{:?}", form_data);
-
-                let result = reqwest::Client::new()
+                let response = reqwest::Client::new()
                     .post("https://api.realworld.io/api/users")
                     .json(&form_data)
                     .send()
-                    .await;
+                    .await
+                    .unwrap();
 
-                match result {
-                    Ok(response) => {
-                        if response.status().is_success() {
-                            match response.json::<UserResponse>().await {
-                                Ok(data) => {
-                                    let window = web_sys::window().expect("window");
-                                    log::debug!("window: {:#?}", window);
-                                    log::debug!("data: {:#?}", data);
+                if response.status().is_success() {
+                    match response.json::<UserResponse>().await {
+                        Ok(data) => {
+                            log::debug!("data: {:#?}", data);
 
-                                    window
-                                        .local_storage()
-                                        .unwrap()
-                                        .unwrap()
-                                        .set_item("jwt", &data.user.token)
-                                        .unwrap();
+                            local_storage::set_item("jwt", &data.user.token);
 
-                                    router.push_route(path::HOME, None, None);
-                                }
-                                Err(_) => todo!(),
-                            }
-                        } else {
-                            match response.json::<GenericError>().await {
-                                Ok(data) => atoms.set(SIGN_IN_ERROR.unique_id(), Some(data)),
-                                Err(_) => todo!(),
-                            }
+                            router.push_route(path::HOME, None, None);
                         }
+                        Err(_) => todo!(),
                     }
-                    Err(_) => todo!(),
+                } else {
+                    match response.json::<GenericError>().await {
+                        Ok(data) => atoms.set(SIGN_IN_ERROR.unique_id(), Some(data)),
+                        Err(_) => todo!(),
+                    }
                 }
             }
         }
