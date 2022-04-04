@@ -1,6 +1,7 @@
 #![allow(non_snake_case)]
 
 use dioxus::prelude::*;
+use services::api::API;
 
 mod components;
 mod features;
@@ -24,6 +25,10 @@ fn main() {
 }
 
 fn App(cx: Scope) -> Element {
+    cx.use_hook(|_| {
+        cx.provide_context(API::new());
+    });
+
     cx.render(rsx! (
         Router {
             Route { to: path::HOME, HomePage {} }

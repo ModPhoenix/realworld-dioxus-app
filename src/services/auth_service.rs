@@ -9,10 +9,12 @@ use dioxus::{
 use futures::StreamExt;
 
 use crate::{
-    settings::path,
+    settings::{path, JWT_KEY},
     types::{GenericError, SignUpFormDataRequest, UserResponse},
     utils::local_storage,
 };
+
+use super::api::API;
 
 pub static SIGN_IN_ERROR: Atom<Option<GenericError>> = |_| None;
 
@@ -22,14 +24,16 @@ pub enum AuthService {
 
 pub async fn auth_service(
     mut rx: UnboundedReceiver<AuthService>,
+    api: API,
     atoms: Rc<AtomRoot>,
     router: RouterService,
 ) {
     while let Some(msg) = rx.next().await {
         match msg {
             AuthService::SignUp(form_data) => {
-                let response = reqwest::Client::new()
-                    .post("https://api.realworld.io/api/users")
+                let response = api
+                    .client
+                    .post(API::create_url("/users"))
                     .json(&form_data)
                     .send()
                     .await
@@ -40,7 +44,7 @@ pub async fn auth_service(
                         Ok(data) => {
                             log::debug!("data: {:#?}", data);
 
-                            local_storage::set_item("jwt", &data.user.token);
+                            local_storage::set_item(JWT_KEY, &data.user.token);
 
                             router.push_route(path::HOME, None, None);
                         }

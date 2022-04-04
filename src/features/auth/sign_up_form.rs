@@ -1,16 +1,20 @@
 use dioxus::{events::FormEvent, fermi::use_atom_root, prelude::*};
 
 use crate::{
-    services::auth_service::{auth_service, AuthService, SIGN_IN_ERROR},
+    services::{
+        api::API,
+        auth_service::{auth_service, AuthService, SIGN_IN_ERROR},
+    },
     types::{SignUpFormData, SignUpFormDataRequest},
 };
 
 pub fn SignUpForm(cx: Scope) -> Element {
     let router = use_router(&cx);
-
     let atoms = use_atom_root(&cx);
-    let auth = use_coroutine(&cx, |rx| auth_service(rx, atoms.clone(), router.clone()));
-
+    let api = cx.consume_context::<API>()?;
+    let auth = use_coroutine(&cx, |rx| {
+        auth_service(rx, api, atoms.clone(), router.clone())
+    });
     let error = use_read(&cx, SIGN_IN_ERROR);
 
     let onsubmit = move |evt: FormEvent| {
