@@ -16,6 +16,9 @@ pub fn SignUpForm(cx: Scope) -> Element {
         auth_service(rx, api, atoms.clone(), router.clone())
     });
     let error = use_read(&cx, SIGN_IN_ERROR);
+    let set_error = use_set(&cx, SIGN_IN_ERROR);
+
+    cx.use_hook(|_| set_error(None));
 
     let onsubmit = move |evt: FormEvent| {
         auth.send(AuthService::SignUp(SignUpFormDataRequest {
