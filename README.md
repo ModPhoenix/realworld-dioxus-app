@@ -10,11 +10,11 @@ We've gone to great lengths to adhere to the **Dioxus** community styleguides & 
 
 For more information on how to this works with other frontends/backends, head over to the [RealWorld](https://github.com/gothinkster/realworld) repo.
 
-# How it works
+## How it works
 
 > Describe the general architecture of your app here
 
-# Getting started
+## Getting started
 
 Setup rust tools:
 
@@ -36,7 +36,7 @@ Build release:
 trunk build --release
 ```
 
-# TODO
+## TODO
 
 - [ ] Authenticate users via JWT (login/signup pages + logout button on settings page)
 - [ ] CRU\* users (sign up & settings page - no deleting required)

@@ -1,23 +1,39 @@
 #![allow(non_snake_case)]
 
 use dioxus::prelude::*;
+use services::api::API;
 
 mod components;
 mod features;
+mod services;
+mod settings;
+mod types;
+mod utils;
 
 use crate::{
-    components::{footer::Footer, header::Header},
-    features::home::home_page::HomePage,
+    features::{
+        auth::{SignInPage, SignUpPage},
+        home::HomePage,
+    },
+    settings::path,
 };
 
 fn main() {
+    wasm_logger::init(wasm_logger::Config::new(log::Level::Info));
+
     dioxus::web::launch(App);
 }
 
 fn App(cx: Scope) -> Element {
+    cx.use_hook(|_| {
+        cx.provide_context(API::new());
+    });
+
     cx.render(rsx! (
-        Header {  }
-        HomePage {  }
-        Footer {  }
+        Router {
+            Route { to: path::HOME, HomePage {} }
+            Route { to: path::SIGN_UP, SignUpPage {} }
+            Route { to: path::SIGN_IN, SignInPage {} }
+        }
     ))
 }
