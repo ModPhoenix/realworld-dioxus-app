@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, PartialEq)]
 pub struct GenericError {
     pub errors: HashMap<String, Vec<String>>,
 }
@@ -22,13 +22,24 @@ pub struct User {
 }
 
 #[derive(Debug, Serialize)]
-pub struct SignUpFormData {
+pub struct NewUser {
     pub username: String,
     pub email: String,
     pub password: String,
 }
 
 #[derive(Debug, Serialize)]
-pub struct SignUpFormDataRequest {
-    pub user: SignUpFormData,
+pub struct NewUserRequest {
+    pub user: NewUser,
+}
+
+#[derive(Debug, Serialize)]
+pub struct LoginUser {
+    pub email: String,
+    pub password: String,
+}
+
+#[derive(Debug, Serialize)]
+pub struct LoginUserRequest {
+    pub user: LoginUser,
 }

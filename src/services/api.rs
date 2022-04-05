@@ -11,7 +11,7 @@ impl API {
     pub fn new() -> Self {
         let jwt = local_storage::get_item(JWT_KEY);
 
-        log::debug!("jwt {:?}", jwt);
+        log::info!("jwt {:?}", jwt);
 
         let mut headers = header::HeaderMap::new();
 

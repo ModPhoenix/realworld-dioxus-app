@@ -1,4 +1,5 @@
 mod auth_layout;
+mod sign_in_form;
 mod sign_in_page;
 mod sign_up_form;
 mod sign_up_page;

@@ -4,27 +4,26 @@ use crate::{
     components::FormErrorMessages,
     services::{
         api::API,
-        auth_service::{auth_service, AuthService, SIGN_UP_ERROR},
+        auth_service::{auth_service, AuthService, SIGN_IN_ERROR},
     },
-    types::{NewUser, NewUserRequest},
+    types::{LoginUser, LoginUserRequest},
 };
 
-pub fn SignUpForm(cx: Scope) -> Element {
+pub fn SignInForm(cx: Scope) -> Element {
     let router = use_router(&cx);
     let atoms = use_atom_root(&cx);
     let api = cx.consume_context::<API>()?;
     let auth = use_coroutine(&cx, |rx| {
         auth_service(rx, api, atoms.clone(), router.clone())
     });
-    let error = use_read(&cx, SIGN_UP_ERROR);
-    let set_error = use_set(&cx, SIGN_UP_ERROR);
+    let error = use_read(&cx, SIGN_IN_ERROR);
+    let set_error = use_set(&cx, SIGN_IN_ERROR);
 
     cx.use_hook(|_| set_error(None));
 
     let onsubmit = move |evt: FormEvent| {
-        auth.send(AuthService::SignUp(NewUserRequest {
-            user: NewUser {
-                username: evt.values["username"].clone(),
+        auth.send(AuthService::SignIn(LoginUserRequest {
+            user: LoginUser {
                 email: evt.values["email"].clone(),
                 password: evt.values["password"].clone(),
             },
@@ -36,15 +35,6 @@ pub fn SignUpForm(cx: Scope) -> Element {
         form {
             onsubmit: onsubmit,
             prevent_default: "onsubmit",
-            fieldset { class: "form-group",
-                input {
-                    name: "username",
-                    class: "form-control form-control-lg",
-                    r#type: "text",
-                    placeholder: "Your Name",
-                    required: "true",
-                }
-            }
             fieldset { class: "form-group",
                 input {
                     name: "email",
@@ -65,7 +55,7 @@ pub fn SignUpForm(cx: Scope) -> Element {
             }
             button {
                 class: "btn btn-lg btn-primary pull-xs-right",
-                "Sign up"
+                "Sign in"
             }
     }))
 }
