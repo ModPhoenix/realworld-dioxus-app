@@ -1,14 +1,20 @@
 use dioxus::prelude::*;
 use serde::Deserialize;
 
+use crate::services::api::API;
+
 #[derive(Deserialize)]
 pub struct TagsResponse {
     tags: Vec<String>,
 }
 
 pub fn Tags(cx: Scope) -> Element {
+    let api = cx.consume_context::<API>()?;
+
     let tags_response = use_future(&cx, (), |_| async move {
-        reqwest::get("https://api.realworld.io/api/tags")
+        api.client
+            .get(API::create_url("/tags"))
+            .send()
             .await
             .unwrap()
             .json::<TagsResponse>()
